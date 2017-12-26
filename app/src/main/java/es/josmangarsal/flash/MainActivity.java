@@ -1,7 +1,12 @@
 package es.josmangarsal.flash;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
@@ -9,8 +14,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.NotificationCompat;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Switch;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -20,6 +28,16 @@ public class MainActivity extends AppCompatActivity {
     private CameraManager cameraManager;
     private String cameraId;
     private Boolean isTorchOn;
+
+    Intent intentNotificationService;
+
+    Button btnServiceOn;
+    Button btnServiceOff;
+
+    Button btnSendFakeNotification;
+
+    private SharedPreferences settings;
+    private SharedPreferences.Editor settingsEditor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +84,55 @@ public class MainActivity extends AppCompatActivity {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
+                }
+            }
+        });
+
+        // Service
+        intentNotificationService = new Intent(getApplicationContext(), NotificationService.class);
+
+        settings = getApplicationContext().getSharedPreferences("Settings", Context.MODE_PRIVATE);
+        settingsEditor = settings.edit();
+        settingsEditor.putBoolean("notificationServiceStatus", false);
+        settingsEditor.commit();
+        //Log.d("InitialStatus", "" + active);
+
+        // Service buttons
+        btnServiceOn = (Button) findViewById(R.id.button_serOn);
+        btnServiceOff = (Button) findViewById(R.id.button_serOff);
+
+        // Bottons events
+        btnServiceOn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startService(intentNotificationService);
+                settingsEditor.putBoolean("notificationServiceStatus", true);
+                settingsEditor.commit();
+                //Log.d("DEBUG", "startService");
+            }
+        });
+
+        btnServiceOff.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //stopService();
+                settingsEditor.putBoolean("notificationServiceStatus", false);
+                settingsEditor.commit();
+                //Log.d("DEBUG", "stopService");
+
+            }
+        });
+
+        // Fake notification
+        btnSendFakeNotification = (Button) findViewById(R.id.button_send);
+        btnSendFakeNotification.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(MainActivity.this,"Enviando notificación falsa",Toast.LENGTH_SHORT).show();
+                if (!cam_switch.isChecked()){
+                    displayNotification();
+                } else {
+                    displayNotification2();
                 }
             }
         });
@@ -147,5 +214,75 @@ public class MainActivity extends AppCompatActivity {
         if(isTorchOn){
             turnOnFlashLight();
         }
+    }
+
+    // Fake notification for tests
+    protected void displayNotification(){
+        int notificationID = 1;
+
+        Intent i = new Intent(this, MainActivity.class);
+        i.putExtra("notificationID", notificationID);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, i, 0);
+        NotificationManager nm = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+
+        CharSequence ticker ="Notificación sin sonido para simular un mensaje de Sheyla";
+        CharSequence contentTitle = "Sheyla";
+        CharSequence contentText = "Hola";
+        Notification noti = new NotificationCompat.Builder(this)
+                .setContentIntent(pendingIntent)
+                .setTicker(ticker)
+                .setContentTitle(contentTitle)
+                .setContentText(contentText)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                //.addAction(R.mipmap.ic_launcher, ticker, pendingIntent)
+                .build();
+        nm.notify(notificationID, noti);
+    }
+
+    protected void displayNotification2(){
+        int notificationID = 2;
+
+        Intent i = new Intent(this, MainActivity.class);
+        i.putExtra("notificationID", notificationID);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, i, 0);
+        NotificationManager nm = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+
+        CharSequence ticker ="Notificación sin sonido para simular un mensaje de Sheyla";
+        CharSequence contentTitle = "Jose";
+        CharSequence contentText = "Hola";
+        Notification noti = new NotificationCompat.Builder(this)
+                .setContentIntent(pendingIntent)
+                .setTicker(ticker)
+                .setContentTitle(contentTitle)
+                .setContentText(contentText)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                //.addAction(R.mipmap.ic_launcher, ticker, pendingIntent)
+                .build();
+        nm.notify(notificationID, noti);
+    }
+
+    protected void stopService(){
+        int notificationID = 0;
+
+        Intent i = new Intent(this, MainActivity.class);
+        i.putExtra("notificationID", notificationID);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, i, 0);
+        NotificationManager nm = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+
+        CharSequence ticker ="";
+        CharSequence contentTitle = "stopSelf";
+        CharSequence contentText = "";
+        Notification noti = new NotificationCompat.Builder(this)
+                .setContentIntent(pendingIntent)
+                .setTicker(ticker)
+                .setContentTitle(contentTitle)
+                .setContentText(contentText)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                //.addAction(R.mipmap.ic_launcher, ticker, pendingIntent)
+                .build();
+        nm.notify(notificationID, noti);
     }
 }

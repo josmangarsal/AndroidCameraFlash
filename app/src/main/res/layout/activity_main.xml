@@ -14,17 +14,57 @@
         android:text="Flash Off/On"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
         android:id="@+id/flash_switch"
-        android:checked="false" />
+        android:checked="false"
+        android:layout_alignParentTop="true"
+        android:layout_alignEnd="@+id/cam_switch"
+        android:layout_marginTop="35dp" />
 
     <Switch
         android:text="Camera 1/2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:id="@+id/cam_switch"
+        android:layout_below="@+id/flash_switch"
         android:layout_centerHorizontal="true"
-        android:id="@+id/cam_switch" />
+        android:layout_marginTop="35dp" />
+
+    <Button
+        android:text="On"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignEnd="@+id/cam_switch"
+        android:layout_marginEnd="58dp"
+        android:layout_marginBottom="11dp"
+        android:id="@+id/button_serOn" />
+
+    <Button
+        android:text="Off"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/button_serOn"
+        android:layout_alignStart="@+id/cam_switch"
+        android:layout_marginStart="67dp"
+        android:id="@+id/button_serOff" />
+
+    <TextView
+        android:text="Notification service"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="25dp"
+        android:id="@+id/textView"
+        android:layout_above="@+id/button_serOn"
+        android:layout_alignStart="@+id/cam_switch"
+        android:layout_marginStart="9dp" />
+
+    <Button
+        android:text="Fake"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/textView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="63dp"
+        android:id="@+id/button_send" />
 
 </RelativeLayout>
